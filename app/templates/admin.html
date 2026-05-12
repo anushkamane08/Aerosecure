@@ -1,0 +1,222 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Admin Dashboard</h1>
+
+
+
+<!-- CREATE MANAGER -->
+<div class="card" id="create">
+<h2>Create Manager</h2>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+
+    <select name="role">
+        <option value="manager">Manager</option>
+    </select>
+
+    <button type="submit">Create</button>
+</form>
+</div>
+
+<!-- USERS -->
+<div class="card">
+<h2>All Users</h2>
+
+<table>
+<tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>Role</th>
+    <th>Action</th>
+</tr>
+
+{% for user in users %}
+<tr>
+    <td>{{ user['id'] }}</td>
+    <td>{{ user['username'] }}</td>
+    <td>{{ user['role'] }}</td>
+    <td>
+        {% if user['role'] != 'admin' %}
+        <form method="POST">
+            <input type="hidden" name="delete_user_id" value="{{ user['id'] }}">
+            <button class="delete-btn">Delete</button>
+        </form>
+        {% else %}
+        🔒
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Tasks</h3>
+        <p>{{ total }}</p>
+    </div>
+
+    <div class="stat-card success">
+        <h3>Completed</h3>
+        <p>{{ completed }}</p>
+    </div>
+
+    <div class="stat-card warning">
+        <h3>Pending</h3>
+        <p>{{ pending }}</p>
+    </div>
+
+    <div class="stat-card danger">
+        <h3>Rejected</h3>
+        <p>{{ rejected }}</p>
+    </div>
+</div>
+<!-- ASSIGN TASK -->
+<div class="card" id="assign">
+<h2>Assign Task to Manager</h2>
+
+<form method="POST">
+    <input type="text" name="title" placeholder="Task Name" required>
+
+    <select name="user_id">
+    {% for m in managers %}
+        <option value="{{ m['id'] }}">{{ m['username'] }}</option>
+    {% endfor %}
+    </select>
+
+    <input type="date" name="deadline" required>
+
+    <button type="submit">Assign</button>
+</form>
+</div>
+
+<div class="card">
+<h2>Manager Submissions</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>File</th>
+    <th>Action</th>
+</tr>
+
+{% for task in manager_submissions %}
+<tr>
+    <td>{{ task['title'] }}</td>
+
+    <td>
+        <span class="badge pending">Pending Admin</span>
+    </td>
+
+    <td>
+        {% if task['manager_file'] %}
+        <a href="{{ url_for('static', filename='uploads/' + task['manager_file']) }}" target="_blank">
+            View
+        </a>
+        {% else %}
+        -
+        {% endif %}
+    </td>
+
+    <td>
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <button name="action" value="approve">Approve</button>
+        </form>
+
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <button name="action" value="reject">Reject</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- TASKS -->
+<div class="card">
+<h2 id="pending">Pending Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+</tr>
+
+{% for task in pending_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge pending">{{ task['status'] }}</span></td>
+    <td>{{ task['deadline'] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2 id="completed"> Completed Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+</tr>
+
+{% for task in completed_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge approved">Approved</span></td>
+    <td>{{ task['deadline'] }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<div class="card">
+<h2 id="rejected">Rejected Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+</tr>
+
+{% for task in rejected_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge rejected">Rejected</span></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- LOGS -->
+<div class="card" id="logs">
+<h2>System Logs</h2>
+
+<table>
+<tr>
+    <th>User</th>
+    <th>Action</th>
+    <th>IP</th>
+    <th>Time</th>
+</tr>
+
+{% for log in logs %}
+<tr>
+    <td>{{ log['username'] or 'Unknown' }}</td>
+    <td>{{ log['action'] }}</td>
+    <td>{{ log['ip'] }}</td>
+    <td>{{ log['timestamp'] }}</td>
+</tr>
+{% endfor %}
+</table>
+
+{% endblock %}

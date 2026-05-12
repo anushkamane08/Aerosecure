@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Employee Dashboard</h1>
+
+<!-- STATS -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Tasks</h3>
+        <p>{{ total }}</p>
+    </div>
+
+    <div class="stat-card success">
+        <h3>Completed</h3>
+        <p>{{ completed }}</p>
+    </div>
+
+    <div class="stat-card warning">
+        <h3>Pending</h3>
+        <p>{{ pending }}</p>
+    </div>
+
+    <div class="stat-card danger">
+        <h3>Rejected</h3>
+        <p>{{ rejected }}</p>
+    </div>
+</div>
+
+<!-- 🔵 PENDING TASKS -->
+<div class="card" id="pending">
+<h2>⏳ Pending Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+    <th>Proof</th>
+    <th>Action</th>
+</tr>
+
+{% for task in pending_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge pending">Pending</span></td>
+    <td>{{ task['deadline'] }}</td>
+
+    <td>
+        {% if task['file_path'] %}
+            <a href="{{ url_for('static', filename='uploads/' + task['file_path']) }}">View</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+    <td>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <input type="file" name="proof">
+            <button type="submit">Submit</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<!-- 🟢 COMPLETED TASKS -->
+<div class="card" id="completed">
+<h2>✔ Completed Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+    <th>Proof</th>
+</tr>
+
+{% for task in completed_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge approved">Approved</span></td>
+    <td>{{ task['deadline'] }}</td>
+
+    <td>
+        {% if task['file_path'] %}
+            <a href="{{ url_for('static', filename='uploads/' + task['file_path']) }}">View</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+
+<!-- 🔴 REJECTED TASKS -->
+<div class="card" id="rejected">
+<h2>❌ Rejected Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+    <th>Action</th>
+</tr>
+
+{% for task in rejected_tasks %}
+<tr>
+    <td>{{ task['task_name'] }}</td>
+    <td><span class="badge rejected">Rejected</span></td>
+    <td>{{ task['deadline'] }}</td>
+
+    <td>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <input type="file" name="proof">
+            <button type="submit">Resubmit</button>
+        </form>
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

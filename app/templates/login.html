@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AeroSecure Login</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background: #f4f7fb;
+        }
+
+        /* LEFT SIDE (AIRPORT IMAGE) */
+        .left {
+            width: 50%;
+            background: linear-gradient(rgba(0,40,80,0.6), rgba(0,40,80,0.8)),
+                        url('https://images.unsplash.com/photo-1504198453319-5ce911bafcde');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 60px;
+            color: white;
+        }
+
+        .left h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+
+        .left p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        /* RIGHT SIDE */
+        .right {
+            width: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            background: #f4f7fb;
+        }
+
+        /* LOGIN CARD */
+        .card {
+            background: white;
+            padding: 35px;
+            border-radius: 14px;
+            width: 360px;
+            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+        }
+
+        .card h2 {
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #64748b;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+            color: #1e293b;
+        }
+
+        input::placeholder {
+            color: #94a3b8;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #00a8cc;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #00a8cc;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background: #007ea7;
+        }
+
+        .note {
+            margin-top: 15px;
+            font-size: 13px;
+            color: #94a3b8;
+        }
+
+        /* ERROR */
+        .error {
+            background: #ffe5e5;
+            color: #d90429;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* LOCK MESSAGE */
+        .lock {
+            background: #fff3cd;
+            color: #856404;
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        /* FOOTER CREDIT */
+        .footer {
+            position: absolute;
+            bottom: 15px;
+            right: 20px;
+            color: #64748b;
+            font-size: 12px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<!-- LEFT SIDE -->
+<div class="left">
+    <h1>✈ AeroSecure</h1>
+    <p>Advanced Airport Security Management System</p>
+</div>
+
+<!-- RIGHT SIDE -->
+<div class="right">
+
+    <form class="card" method="POST">
+        <h2>Sign in</h2>
+        <p>Access your dashboard</p>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        {% if remaining %}
+            <div class="lock">
+                🔒 Account locked. Try again in {{ remaining }} seconds
+            </div>
+        {% endif %}
+
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+
+        <button type="submit">Sign In</button>
+
+        <div class="note">Authorized personnel only</div>
+    </form>
+
+    <!-- FOOTER -->
+    <div class="footer">
+        Made by: Charmi Ramaiya, Diya Patel, Moushali Brahmachary, Anushka Mane
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1>Manager Dashboard</h1>
+
+<!-- CREATE EMPLOYEE -->
+<div class="card" id="create">
+<h2>Create Employee</h2>
+
+<form method="POST">
+    <input type="text" name="username" placeholder="Username" required>
+    <input type="email" name="email" placeholder="Email" required>
+    <input type="password" name="password" placeholder="Password" required>
+    <button type="submit">Create</button>
+</form>
+</div>
+
+<!-- TASKS FROM ADMIN -->
+<div class="card">
+<h2>Tasks Assigned by Admin</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Deadline</th>
+    <th>Action</th>
+</tr>
+
+{% for task in admin_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+
+    <td>
+        {% if task['status'] == 'pending_admin' %}
+            <span class="badge pending">Pending Admin</span>
+        {% elif task['status'] == 'approved' %}
+            <span class="badge approved">Approved</span>
+        {% elif task['status'] == 'rejected' %}
+            <span class="badge rejected">Rejected</span>
+        {% else %}
+            <span class="badge assigned">Assigned</span>
+        {% endif %}
+    </td>
+
+    <td>{{ task['deadline'] }}</td>
+
+    <td>
+        {% if task['status'] != 'approved' and task['status'] != 'pending_admin' %}
+        <form method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <input type="file" name="manager_file" required>
+            <button name="action" value="submit_admin">Submit</button>
+        </form>
+
+        {% elif task['status'] == 'pending_admin' %}
+            <span class="badge pending">Submitted</span>
+            {% if task['manager_file'] %}
+                <br>
+                <a href="{{ url_for('static', filename='uploads/' + task['manager_file']) }}" target="_blank">View</a>
+            {% endif %}
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- ASSIGN TASK -->
+<div class="card" id="assign">
+<h2>Assign Task to Employee</h2>
+
+<form method="POST">
+    <input type="text" name="title" placeholder="Task Name" required>
+
+    <select name="user_id">
+        {% for emp in employees %}
+        <option value="{{ emp['id'] }}">{{ emp['username'] }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="date" name="deadline" required>
+    <button type="submit">Assign</button>
+</form>
+</div>
+
+<!-- ================= TASK SECTIONS ================= -->
+
+<!-- PENDING -->
+<div class="card">
+<h2 id="pending">⏳ Pending Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Proof</th>
+    <th>Action</th>
+</tr>
+
+{% for task in pending_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge pending">Pending</span></td>
+
+    <td>
+        {% if task['file_path'] %}
+            <a href="{{ url_for('static', filename='uploads/' + task['file_path']) }}" target="_blank">View</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+
+    <td>
+        {% if task['status'] == 'pending_manager' %}
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <button name="action" value="approve">Approve</button>
+        </form>
+
+        <form method="POST" style="display:inline;">
+            <input type="hidden" name="task_id" value="{{ task['id'] }}">
+            <button name="action" value="reject" class="delete-btn">Reject</button>
+        </form>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+{% if not pending_tasks %}
+<tr><td colspan="4">No pending tasks</td></tr>
+{% endif %}
+</table>
+</div>
+
+<!-- COMPLETED -->
+<div class="card">
+<h2 id="completed">✅ Completed Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+    <th>Proof</th>
+</tr>
+
+{% for task in completed_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge approved">Approved</span></td>
+
+    <td>
+        {% if task['file_path'] %}
+            <a href="{{ url_for('static', filename='uploads/' + task['file_path']) }}" target="_blank">View</a>
+        {% else %}
+            -
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+{% if not completed_tasks %}
+<tr><td colspan="3">No completed tasks</td></tr>
+{% endif %}
+</table>
+</div>
+
+<!-- REJECTED -->
+<div class="card">
+<h2 id="rejected">❌ Rejected Tasks</h2>
+
+<table>
+<tr>
+    <th>Task</th>
+    <th>Status</th>
+</tr>
+
+{% for task in rejected_tasks %}
+<tr>
+    <td>{{ task['title'] }}</td>
+    <td><span class="badge rejected">Rejected</span></td>
+</tr>
+{% endfor %}
+
+{% if not rejected_tasks %}
+<tr><td colspan="2">No rejected tasks</td></tr>
+{% endif %}
+</table>
+</div>
+
+<!-- EOD REPORT -->
+<div class="card">
+<h2>End of Day Report</h2>
+
+<form method="POST">
+    <button name="send_report">Send Report to Admin</button>
+</form>
+</div>
+
+{% endblock %}
