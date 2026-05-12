@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 
-from Lib import email
+from app.utils import email
 
 DB_NAME = "database.db"
 
